@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect, createContext, useContext, ReactNode } from 'react';
@@ -39,7 +38,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const value = { user, loading, logout };
 
-  return React.createElement(AuthContext.Provider, { value: value }, children);
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
 export function useAuth() {

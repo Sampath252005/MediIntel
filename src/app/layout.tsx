@@ -3,7 +3,7 @@ import { Inter, Source_Code_Pro } from 'next/font/google';
 import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
 import { cn } from '@/lib/utils';
-import { AuthProvider } from '@/hooks/use-auth';
+import { AuthProvider } from '@/hooks/use-auth.tsx';
 import React from 'react';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
