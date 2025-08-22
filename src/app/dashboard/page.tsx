@@ -1,9 +1,8 @@
 "use client";
 
-import { BotMessageSquare, HeartPulse, Pill, Scan, User } from "lucide-react";
+import { BotMessageSquare, HeartPulse, Pill, Scan } from "lucide-react";
 import { FeatureCard } from "@/components/feature-card";
 import { PageHeader } from "@/components/page-header";
-import { useAuth } from "@/providers/auth-provider";
 
 const features = [
   {
@@ -30,21 +29,13 @@ const features = [
     description: "Upload an image of a lesion for an AI-powered risk analysis.",
     href: "/dashboard/skin-cancer-detection",
   },
-   {
-    icon: <User />,
-    title: "Profile Management",
-    description: "Manage your personal information and uploaded documents.",
-    href: "/dashboard/profile",
-  },
 ];
 
 export default function DashboardPage() {
-  const { user } = useAuth();
-  
   return (
     <div className="space-y-8">
       <PageHeader
-        title={`Welcome back, ${user?.displayName || "User"}!`}
+        title="Welcome back, User!"
         description="Here are your AI-powered tools to help you manage your health."
       />
 

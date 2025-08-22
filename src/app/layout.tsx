@@ -1,7 +1,6 @@
 import type { Metadata } from 'next';
 import { Inter, Source_Code_Pro } from 'next/font/google';
 import './globals.css';
-import { AuthProvider } from '@/providers/auth-provider';
 import { Toaster } from '@/components/ui/toaster';
 import { cn } from '@/lib/utils';
 
@@ -30,10 +29,8 @@ export default function RootLayout({
           sourceCodePro.variable
         )}
       >
-        <AuthProvider>
-          {children}
-          <Toaster />
-        </AuthProvider>
+        {children}
+        <Toaster />
       </body>
     </html>
   );
