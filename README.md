@@ -34,3 +34,23 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+
+step 1]create a environmemt variable
+cd backend   # go to your FastAPI project folder
+python3 -m venv venv   # create a virtual environment
+source venv/bin/activate   # activate it (Linux/Mac)
+venv\Scripts\activate      # activate it (Windows PowerShell)
+
+
+
+step2]
+pip install -r requirements.txt
+
+
+to run backend file:/backend
+uvicorn main:app --reload
+
+
+to run frotend
+npm run dev
