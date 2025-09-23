@@ -36,9 +36,12 @@ The easiest way to deploy your Next.js app is to use the [Vercel Platform](https
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
 
 
+git clone link:https://github.com/Sampath252005/MediIntel.git
+
+
 step 1]create a environmemt variable
 cd backend   # go to your FastAPI project folder
-python3 -m venv venv   # create a virtual environment
+python3 -m venv menv   # create a virtual environment
 source venv/bin/activate   # activate it (Linux/Mac)
 venv\Scripts\activate      # activate it (Windows PowerShell)
 
@@ -52,5 +55,5 @@ to run backend file:/backend
 uvicorn main:app --reload
 
 
-to run frotend
+to run frotend:/frontend
 npm run dev
