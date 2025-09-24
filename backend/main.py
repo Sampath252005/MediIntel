@@ -2,6 +2,11 @@ from fastapi import FastAPI,Depends
 from routers.authApi import router , get_current_user
 from database import create_db_and_tables
 from fastapi.middleware.cors import CORSMiddleware
+from starlette.middleware.sessions import SessionMiddleware
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
 
 app = FastAPI()
 
@@ -13,6 +18,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+app.add_middleware(
+    SessionMiddleware, 
+    secret_key=os.getenv("SECRET_KEY")
+)
 
 @app.on_event("startup")
 def on_startup():

@@ -5,4 +5,5 @@ class Users(SQLModel , table = True):
     id: Optional[int] = Field(default=None , primary_key=True)
     name: str
     email : str = Field(unique=True , index=True)
-    password: str
+    password: Optional[str] = Field(default=None,nullable=True)
+    picture: Optional[str] = Field(default=None,nullable=True)
