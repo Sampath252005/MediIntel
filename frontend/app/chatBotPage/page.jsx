@@ -1,11 +1,11 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import ChatBotHistory from "../components/ChatBotHistory"
-import ChatBotChatInterface from "../components/ChatbotChatInterface"
+import ChatBotHistory from "../components/ChatBotHistory";
+import ChatBotChatInterface from "../components/ChatbotChatInterface";
 // import { motion } from "framer-motion";
 // import { Trash2 } from "lucide-react";
 
- const chatBotPage=()=> {
+const chatBotPage = () => {
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState([]);
   const [history, setHistory] = useState([]);
@@ -114,15 +114,15 @@ import ChatBotChatInterface from "../components/ChatbotChatInterface"
     //     </ul>
     //   </div>
     // </div>
-    <div className="flex min-h-screen">
+    <div className="flex min-h-screen ">
       <div className="w-1/4 bg-black">
-    <ChatBotHistory/>
-    </div>
-    <div className="w-3/4 bg-white">
-    <ChatBotChatInterface/>
-    </div>
+        <ChatBotHistory />
+      </div>
+      <div className="w-3/4 bg-gradient-to-r from-sky-300 to-orange-300 ">
+        <ChatBotChatInterface />
+      </div>
     </div>
   );
-}
+};
 
 export default chatBotPage;
