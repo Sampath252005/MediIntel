@@ -3,6 +3,9 @@
 # dependencies
 /frontend/node_modules
 /backend/menv
+/backend/data
+/backend/__pycache__
+/backend/project.db
 /frontend/.pnp
 /frontend/pnpm-lock.yaml
 /frontend/.yarn/*
