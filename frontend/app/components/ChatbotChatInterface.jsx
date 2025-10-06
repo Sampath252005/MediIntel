@@ -5,6 +5,7 @@ import Image from "next/image";
 const ChatbotChatInterface = () => {
   return (
     <div>
+
       <div className="col-span-2 flex flex-col border-r border-gray-300 p-4  ">
         <div className="flex justify-between items-center  z-50 top-0 ">
           <h2 className="text-2xl font-bold mb-4 ">🩺 Medical Chatbot</h2>
@@ -43,19 +44,19 @@ const ChatbotChatInterface = () => {
           </div>
           <div className="flex space-x-20 justify-center items-center  mx-20  bg-gray-500 rounded-3xl p-2 bg-transparent text-white">
             <div className="flex justify-center gap-3 items-center p-5 border-black border-2 text-2xl rounded-3xl bg-black ">
-              <span className="p-2  rounded-3xl bg-gray-600">
+              <span className="p-2  rounded-3xl bg-gray-600 cursor-pointer hover:bg-gray-300 ">
                 <Link size={25} className="text-white" />
               </span>
               <span className="text-sm ">Search</span>
             </div>
             <div className=" flex gap-3 p-5 justify-center items-center  border-black  border-2 text-2xl rounded-3xl  bg-black">
-              <span className="p-2  rounded-3xl bg-gray-600">
+              <span className="p-2  rounded-3xl bg-gray-600 cursor-pointer hover:bg-gray-300">
                 <Link size={25} className="text-white" />
               </span>
               <span className="text-sm">Search</span>
             </div>
             <div className="flex p-5 gap-3 justify-center items-center   border-2 border-black text-2xl rounded-3xl  bg-black">
-               <span className="p-2  rounded-3xl bg-gray-600">
+               <span className="p-2  rounded-3xl bg-gray-600 cursor-pointer hover:bg-gray-300">
                 <Link size={25} className="text-white" />
               </span>
               <span className="text-sm">Search</span>
