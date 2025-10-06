@@ -227,7 +227,23 @@ def refresh(
 
 @router.post("/logout")
 def logout(response: Response):
-    response.delete_cookie("access_token")
-    response.delete_cookie("refresh_token")
+    response.set_cookie(
+        key="access_token",
+        value="",
+        httponly=True,
+        secure=True,
+        samesite="strict",
+        max_age=0,
+    )
+
+    response.set_cookie(
+        key="refresh_token",
+        value="",
+        httponly=True,
+        secure=True,
+        path="/refresh",
+        samesite="strict",
+        max_age=0,
+    )
 
     return {"message": "LogOut Success"}
