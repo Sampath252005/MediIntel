@@ -1,11 +1,25 @@
-import React from "react";
+
+import React, { useState } from "react";
 import { User2, Search, Link, Send } from "lucide-react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
+import {v4 as uuidv4} from "uuid";
+
 
 const ChatbotChatInterface = () => {
+  const[input,setInput]=useState("");
+  const router = useRouter();
+
+  const handleSend=()=>{
+    if(input.trim()==="") return;
+    //create a session id
+     const sessionID = uuidv4();
+     router.push(`/chatBotPage/${sessionID}?msg=${encodeURIComponent(input)}`);
+  }
+
+
   return (
     <div>
-
       <div className="col-span-2 flex flex-col border-r border-gray-300 p-4  ">
         <div className="flex justify-between items-center  z-50 top-0 ">
           <h2 className="text-2xl font-bold mb-4 ">🩺 Medical Chatbot</h2>
@@ -36,8 +50,10 @@ const ChatbotChatInterface = () => {
                 type="text"
                 placeholder="Type your message..."
                 className="flex-1 bg-transparent outline-none text-white placeholder-gray-400"
+                value={input}
+                onChange={(e)=>setInput(e.target.value)}
               />
-              <button className="ml-3 p-2 rounded-full bg-gradient-to-r from-blue-400 to-orange-400 hover:opacity-90 transition">
+              <button className="ml-3 p-2 rounded-full bg-gradient-to-r from-blue-400 to-orange-400 hover:opacity-90 transition" onClick={handleSend}>
                 <Send size={25} className="text-black" />
               </button>
             </div>
