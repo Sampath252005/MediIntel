@@ -1,6 +1,7 @@
 from fastapi import FastAPI,Depends
 from routers.authApi import router as authRouter , get_current_user
 from routers.chatHistory import router as chatHistoryRouter
+from routers.chatRouter import router as chatRouter
 from database import create_db_and_tables
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.sessions import SessionMiddleware
@@ -30,6 +31,7 @@ def on_startup():
     
 app.include_router(authRouter)
 app.include_router(chatHistoryRouter)
+app.include_router(chatRouter)
 
 student = [
     {

@@ -1,39 +1,117 @@
 "use client";
-import React, { useState, useEffect } from "react";
-import { useParams, useSearchParams } from "next/navigation";
-import { Send, User2, Link } from "lucide-react";
+import React, { useState, useEffect, useRef } from "react";
+import { useParams, useSearchParams, useRouter } from "next/navigation";
+import { Send, User2, Link, Plus } from "lucide-react";
 import Image from "next/image";
+import ReactMarkdown from "react-markdown"; // ✅ Import react-markdown
 
 export default function ChatSessionPage() {
   const { sessionID } = useParams();
   const searchParams = useSearchParams();
-  const firstMessage = searchParams.get("msg");
+  const router = useRouter();
+  const messagesEndRef = useRef(null);
+  const firstMessageSentRef = useRef(false);
 
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
 
-  // Load the first message (from navigation query)
+  // Scroll to bottom on messages update
   useEffect(() => {
-    if (firstMessage) {
-      setMessages([{ sender: "user", text: firstMessage }]);
-    }
-  }, [firstMessage]);
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
 
-  const handleSend = () => {
+  // Load initial messages including first message handling
+  useEffect(() => {
+    const loadInitialMessages = async () => {
+      if (firstMessageSentRef.current) return;
+
+      try {
+        const response = await fetch(
+          `http://localhost:8000/chats/history?sessionId=${sessionID}`,
+          { method: "GET", credentials: "include" }
+        );
+        const data = await response.json();
+
+        let storedMessages =
+          data.data?.map((msg) => ({
+            id: Date.now() + Math.random(),
+            sender: msg.type === "human" ? "human" : "ai",
+            text: msg.content,
+          })) || [];
+
+        const firstMessage = searchParams.get("msg");
+
+        if (firstMessage && storedMessages.length === 0) {
+          firstMessageSentRef.current = true;
+
+          const decoded = decodeURIComponent(firstMessage);
+
+          const response1 = await fetch(
+            `http://localhost:8000/chats/${sessionID}?userInput=${encodeURIComponent(
+              decoded
+            )}`,
+            { method: "POST", credentials: "include" }
+          );
+          const data1 = await response1.json();
+
+          if (!response1.ok) {
+            console.log("Error sending first message:", data1);
+            alert("Sorry! Try again later.");
+            setMessages([]);
+            return;
+          }
+
+          const newMessages = [
+            { id: Date.now(), sender: "human", text: decoded },
+            { id: Date.now() + 1, sender: "ai", text: data1.data },
+          ];
+
+          router.replace(`/chatBotPage/${sessionID}`, { scroll: false });
+          setMessages(newMessages);
+          return;
+        }
+
+        setMessages(storedMessages);
+      } catch (err) {
+        console.error("Failed to load messages:", err);
+        setMessages([]);
+      }
+    };
+
+    loadInitialMessages();
+  }, [sessionID, searchParams, router]);
+
+  // Send new message
+  const handleSend = async () => {
     if (!input.trim()) return;
 
-    // Add user's message
-    const newMessage = { sender: "user", text: input };
-    setMessages((prev) => [...prev, newMessage]);
+    const userMsg = { id: Date.now(), sender: "human", text: input };
+    setMessages((prev) => [...prev, userMsg]);
     setInput("");
 
-    // Simulate AI reply (you’ll replace this later with backend)
-    setTimeout(() => {
-      setMessages((prev) => [
-        ...prev,
-        { sender: "bot", text: `You said: "${newMessage.text}"` },
-      ]);
-    }, 800);
+    try {
+      const response = await fetch(
+        `http://localhost:8000/chats/${sessionID}?userInput=${encodeURIComponent(
+          input
+        )}`,
+        { method: "POST", credentials: "include" }
+      );
+      const data = await response.json();
+
+      if (!response.ok) {
+        console.log("Error sending message:", data);
+        return;
+      }
+
+      const botMsg = { id: Date.now() + 1, sender: "ai", text: data.data };
+      setMessages((prev) => [...prev, botMsg]);
+    } catch (err) {
+      console.error("Failed to send message:", err);
+    }
+  };
+
+  const handleNewChat = () => {
+    router.push("/chatBotPage");
   };
 
   return (
@@ -58,34 +136,51 @@ export default function ChatSessionPage() {
             <p>Start chatting with your medical assistant 👩‍⚕️</p>
           </div>
         ) : (
-          messages.map((msg, index) => (
+          messages.map((msg) => (
             <div
-              key={index}
+              key={msg.id}
               className={`flex ${
-                msg.sender === "user" ? "justify-end" : "justify-start"
+                msg.sender === "human" ? "justify-end" : "justify-start"
               }`}
             >
               <div
-                className={`p-3 rounded-2xl max-w-xs ${
-                  msg.sender === "user"
+                className={`p-3 rounded-2xl max-w-xs break-words ${
+                  msg.sender === "human"
                     ? "bg-blue-500 text-white"
                     : "bg-gray-300 text-black"
                 }`}
               >
-                {msg.text}
+                {/* ✅ Render Markdown for AI messages */}
+                {msg.sender === "ai" ? (
+                  <ReactMarkdown>{msg.text}</ReactMarkdown>
+                ) : (
+                  msg.text
+                )}
               </div>
             </div>
           ))
         )}
+        <div ref={messagesEndRef} />
       </div>
 
       {/* Input Area */}
       <div className="mt-4 w-full flex justify-center">
         <div className="flex items-center bg-black text-white rounded-full px-4 py-3 w-3/4 shadow-lg">
+          {/* New Chat Button */}
+          <button
+            onClick={handleNewChat}
+            className="flex items-center justify-center mr-3 p-2 rounded-full bg-gradient-to-r from-green-400 to-teal-400 hover:opacity-90 transition"
+            title="Start New Chat"
+          >
+            <Plus size={18} className="text-white" />
+          </button>
+
+          {/* Link Icon */}
           <div className="flex items-center space-x-2 mr-3 cursor-pointer p-2 rounded-full bg-gradient-to-r from-blue-400 to-orange-400 hover:opacity-90 transition">
             <Link size={18} className="text-white" />
           </div>
 
+          {/* Input */}
           <input
             type="text"
             placeholder="Type your message..."
@@ -95,6 +190,7 @@ export default function ChatSessionPage() {
             onKeyDown={(e) => e.key === "Enter" && handleSend()}
           />
 
+          {/* Send Button */}
           <button
             className="ml-3 p-2 rounded-full bg-gradient-to-r from-blue-400 to-orange-400 hover:opacity-90 transition"
             onClick={handleSend}

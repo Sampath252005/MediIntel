@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, Response, Request,status
+from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session, select
 from database import getSession
 from typing import List
@@ -18,7 +18,18 @@ def getChatHistory(userId: int , session : Session = Depends(getSession)):
         "data": [ChatStoreDto(title=chat.title, session_id=chat.session_id) for chat in chats]
     }
 
-@router.post('/{userId}')
+@router.delete('')
+def deleteChat(sessionId: str, session: Session = Depends(getSession)):
+    chat : ChatStore = session.exec(select(ChatStore).where(ChatStore.session_id == sessionId)).first()
+    
+    if not chat:
+        raise HTTPException(status_code=404, detail="Chat not found.")
+    
+    session.delete(chat)
+    session.commit()
+    
+    return {"message": "Chat deleted successfully."}
+
 def storeChatHistory(userId: int,chat : ChatStoreDto,session : Session = Depends(getSession)):
     title = headingGenerator(chat.title)
     newChat = ChatStore(session_id=chat.session_id,title=title,user_id=userId)
@@ -32,15 +43,4 @@ def storeChatHistory(userId: int,chat : ChatStoreDto,session : Session = Depends
         "data": ChatStoreDto(title=title,session_id=chat.session_id)
     }
 
-@router.delete('')
-def deleteChat(sessionId: str, session: Session = Depends(getSession)):
-    chat : ChatStore = session.exec(select(ChatStore).where(ChatStore.session_id == sessionId)).first()
-    
-    if not chat:
-        raise HTTPException(status_code=404, detail="Chat not found.")
-    
-    session.delete(chat)
-    session.commit()
-    
-    return {"message": "Chat deleted successfully."}
     

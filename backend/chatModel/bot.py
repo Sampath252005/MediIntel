@@ -84,6 +84,17 @@ def headingGenerator(firstChat: str):
     response = chain.invoke({'text' : firstChat})
     return response
 
+def getHistry(session_id: str):
+    history = get_session_history(session_id)
+    messages_list = []
+
+    for msg in history.messages:
+        messages_list.append({
+            "type": msg.type,
+            "content": msg.content
+        })
+    return messages_list
+
 
 # if __name__ == "__main__":
 #     config = {"configurable": {"session_id": "user_123"}}
