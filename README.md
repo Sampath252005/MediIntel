@@ -42,7 +42,7 @@ git clone link:https://github.com/Sampath252005/MediIntel.git
 step 1]create a environmemt variable
 cd backend   # go to your FastAPI project folder
 python3 -m venv menv   # create a virtual environment
-source venv/bin/activate   # activate it (Linux/Mac)
+source menv/bin/activate   # activate it (Linux/Mac)
 venv\Scripts\activate      # activate it (Windows PowerShell)
 
 

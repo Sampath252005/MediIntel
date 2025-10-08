@@ -2,15 +2,19 @@
 import React, { useState } from "react";
 import ChatBotHistory from "./ChatBotHistory";
 import { MoveHorizontal } from "lucide-react";
+import { usePathname } from "next/navigation";
 
-const 
-ClientWrapper = ({ children }) => {
+const ClientWrapper = ({ children }) => {
   const [showHistory, setShowHistory] = useState(true);
+  const pathname = usePathname();
+
+  const hideHistoryRoutes = ["/login", "/register", "/"];
+  const shouldHideHistory = hideHistoryRoutes.includes(pathname);
 
   const toggleShowHistory = () => setShowHistory(!showHistory);
   return (
     <div className="flex">
-      {showHistory && (
+      {!shouldHideHistory && showHistory && (
         <ChatBotHistory
           showHistory={showHistory}
           toggleShowHistory={toggleShowHistory}
@@ -19,7 +23,11 @@ ClientWrapper = ({ children }) => {
 
       <div
         className={`${
-          showHistory ? "w-3/4" : "w-full"
+          shouldHideHistory
+            ? "w-full" // 👈 full width for login/register
+            : showHistory
+            ? "w-3/4"
+            : "w-full"
         }  bg-gradient-to-r from-sky-300 to-orange-300 transition-all duration-500`}
       >
         {children}{" "}
