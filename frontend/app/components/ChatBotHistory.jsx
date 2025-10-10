@@ -24,7 +24,7 @@ const ChatBotHistory = ({ toggleShowHistory, showHistory}) => {
 
   useEffect(() => {
     fetchHistory();
-  }, []);
+  },[]);
 
   // Delete a chat
   const handleDelete = async (sessionId) => {
