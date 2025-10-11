@@ -13,7 +13,10 @@ const ChatBotHistory = ({ toggleShowHistory, showHistory}) => {
   const fetchHistory = async () => {
     try {
       const res = await fetch(`http://localhost:8000/chatHistory/1`);
-      if (!res.ok) throw new Error("Failed to fetch chat history");
+      if (!res.ok){
+        console.log("Failed to fetch chat history");
+        return
+      } 
       const data = await res.json();
       setHistory(data.data);
     } catch (err) {
