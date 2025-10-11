@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException
-from sqlmodel import Session, select
+from sqlmodel import Session, select , text
 from database import getSession
 from typing import List
 from dto.chatStoreDto import ChatStoreDto
@@ -26,6 +26,9 @@ def deleteChat(sessionId: str, session: Session = Depends(getSession)):
         raise HTTPException(status_code=404, detail="Chat not found.")
     
     session.delete(chat)
+    session.commit()
+    
+    session.exec(text("DELETE FROM message_store WHERE session_id = :session_id").bindparams(session_id=sessionId))
     session.commit()
     
     return {"message": "Chat deleted successfully."}
