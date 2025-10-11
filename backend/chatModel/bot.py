@@ -12,13 +12,9 @@ from langchain_core.output_parsers import StrOutputParser
 
 load_dotenv()
 
-# PostgreSQL connection string
-DATABASE_URL = os.getenv(
-    "DATABASE_URL"
-)  # e.g., "postgresql://user:password@localhost:5432/dbname"
 
+DATABASE_URL = os.getenv("DATABASE_URL")
 
-# ✅ PostgreSQL persistence with psycopg2
 def get_session_history(session_id: str) -> SQLChatMessageHistory:
     return SQLChatMessageHistory(
         connection_string=DATABASE_URL,
@@ -26,32 +22,21 @@ def get_session_history(session_id: str) -> SQLChatMessageHistory:
         table_name="message_store",
     )
 
-
 llm = GoogleGenerativeAI(model="gemini-2.5-flash", temperature=0.7)
 
-# prompt = ChatPromptTemplate.from_messages([
-#     ("system", "You are a helpful AI assistant. Have a natural conversation with the user. your name is jarvis"),
-#     MessagesPlaceholder(variable_name="history"),
-#     ("human", "{input}")
-# ])
-
-# chain = prompt | llm
-
-# conversation = RunnableWithMessageHistory(
-#     chain,
-#     get_session_history,
-#     input_messages_key="input",
-#     history_messages_key="history"
-# )
+MEDICAL_SYSTEM_PROMPT = """
+You are a professional medical AI assistant named Jarvis. 
+Provide accurate medical information, symptom analysis, and guidance. 
+Be polite, professional, and empathetic. 
+Clarify when unsure, and never prescribe medications. 
+Always advise consulting a qualified doctor when necessary.
+"""
 
 
 def get_general_response(user_input, session_id):
     prompt = ChatPromptTemplate.from_messages(
         [
-            (
-                "system",
-                "You are a helpful AI assistant. Have a natural conversation with the user. your name is jarvis",
-            ),
+            ("system", MEDICAL_SYSTEM_PROMPT),
             MessagesPlaceholder(variable_name="history"),
             ("human", "{input}"),
         ]
@@ -65,24 +50,30 @@ def get_general_response(user_input, session_id):
         input_messages_key="input",
         history_messages_key="history",
     )
+
     general_response = conversation.invoke(
         {"input": user_input}, config={"configurable": {"session_id": session_id}}
     )
+    # Safety check
+    warnings = ["i am not a doctor", "consult a physician", "seek medical attention"]
+    if not any(w in general_response.lower() for w in warnings):
+        general_response += " Please consult a qualified healthcare professional for proper guidance."
     return general_response.strip()
 
 
 def headingGenerator(firstChat: str):
     template = (
-        "Here I am sending the first chat of the user. "
-        "You need to generate a title for me. "
-        "The output should be only a string of the title so that I can directly use that. "
-        "The first chat is: {text}"
+        "You are a medical AI assistant. Generate a concise, descriptive title "
+        "for a medical conversation based on the user's first message. "
+        "Output only the title.\n\n"
+        "User's first message: {text}"
     )
     prompt = PromptTemplate(input_variables=["text"], template=template)
     chain = prompt | llm | StrOutputParser()
     
     response = chain.invoke({'text' : firstChat})
     return response
+
 
 def getHistry(session_id: str):
     history = get_session_history(session_id)
@@ -94,27 +85,3 @@ def getHistry(session_id: str):
             "content": msg.content
         })
     return messages_list
-
-
-# if __name__ == "__main__":
-#     config = {"configurable": {"session_id": "user_123"}}
-
-#     # First message
-#     response1 = conversation.invoke(
-#         {"input": "Hi! I'm learning LangChain."},
-#         config=config
-#     )
-#     print(f"AI: {response1}\n")
-
-#     # Second message - remembers context
-#     response2 = conversation.invoke(
-#         {"input": "What am I learning?"},
-#         config=config
-#     )
-#     print(f"AI: {response2}\n")
-
-#     # View history from PostgreSQL
-#     print("\n--- Message History (from PostgreSQL) ---")
-#     history = get_session_history("user_123")
-#     for msg in history.messages:
-#         print(f"{msg.type}: {msg.content}")
