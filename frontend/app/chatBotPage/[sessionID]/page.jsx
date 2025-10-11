@@ -123,7 +123,7 @@ export default function ChatSessionPage() {
       </div>
 
       {/* Chat Area */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-transparent rounded-xl">
+      <div className="flex-1 overflow-y-scroll scrollbar-hide p-4 space-y-4 bg-transparent rounded-xl">
         {messages.length === 0 ? (
           <div className="flex flex-col items-center justify-center text-center h-full text-gray-600">
             <Image
@@ -144,7 +144,7 @@ export default function ChatSessionPage() {
               }`}
             >
               <div
-                className={`p-3 rounded-2xl max-w-xs break-words ${
+                className={`p-3 rounded-2xl max-w-lg break-words ${
                   msg.sender === "human"
                     ? "bg-blue-500 text-white"
                     : "bg-gray-300 text-black"

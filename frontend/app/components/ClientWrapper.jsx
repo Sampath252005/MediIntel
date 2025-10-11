@@ -28,7 +28,7 @@ const ClientWrapper = ({ children }) => {
             : showHistory
             ? "w-3/4"
             : "w-full"
-        }  bg-gradient-to-r from-sky-300 to-orange-300 transition-all duration-500`}
+        }  bg-gradient-to-r from-blue-300 to-white transition-all duration-500`}
       >
         {children}{" "}
         {/* 👈 renders either ChatbotChatInterface or ChatSessionPage */}

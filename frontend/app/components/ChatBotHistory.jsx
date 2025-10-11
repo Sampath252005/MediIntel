@@ -1,10 +1,16 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { PencilRuler, WalletCards, MoveHorizontal, Search, Trash2 } from "lucide-react";
+import {
+  PencilRuler,
+  WalletCards,
+  MoveHorizontal,
+  Search,
+  Trash2,
+} from "lucide-react";
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 
-const ChatBotHistory = ({ toggleShowHistory, showHistory}) => {
+const ChatBotHistory = ({ toggleShowHistory, showHistory }) => {
   const [history, setHistory] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const router = useRouter();
@@ -13,10 +19,10 @@ const ChatBotHistory = ({ toggleShowHistory, showHistory}) => {
   const fetchHistory = async () => {
     try {
       const res = await fetch(`http://localhost:8000/chatHistory/1`);
-      if (!res.ok){
+      if (!res.ok) {
         console.log("Failed to fetch chat history");
-        return
-      } 
+        return;
+      }
       const data = await res.json();
       setHistory(data.data);
     } catch (err) {
@@ -27,12 +33,15 @@ const ChatBotHistory = ({ toggleShowHistory, showHistory}) => {
 
   useEffect(() => {
     fetchHistory();
-  },[]);
+  }, []);
 
   // Delete a chat
   const handleDelete = async (sessionId) => {
     try {
-      const res = await fetch(`http://localhost:8000/chatHistory?sessionId=${sessionId}`, { method: "DELETE" });
+      const res = await fetch(
+        `http://localhost:8000/chatHistory?sessionId=${sessionId}`,
+        { method: "DELETE" }
+      );
       if (!res.ok) throw new Error("Failed to delete chat");
       // Refresh the history from backend after deletion
       fetchHistory();
@@ -41,7 +50,7 @@ const ChatBotHistory = ({ toggleShowHistory, showHistory}) => {
     }
   };
 
-  const filteredHistory = history.filter(chat =>
+  const filteredHistory = history.filter((chat) =>
     chat.title.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
@@ -58,7 +67,11 @@ const ChatBotHistory = ({ toggleShowHistory, showHistory}) => {
             <PencilRuler size={20} className="cursor-pointer hover:scale-75" />
             <WalletCards size={20} className="cursor-pointer hover:scale-75" />
           </div>
-          <MoveHorizontal size={20} className="cursor-pointer hover:scale-75" onClick={toggleShowHistory} />
+          <MoveHorizontal
+            size={20}
+            className="cursor-pointer hover:scale-75"
+            onClick={toggleShowHistory}
+          />
         </div>
 
         {/* Search Bar */}
@@ -87,7 +100,11 @@ const ChatBotHistory = ({ toggleShowHistory, showHistory}) => {
                   className="p-2 bg-slate-600 text-lg rounded-2xl flex justify-between items-center cursor-pointer hover:bg-slate-700"
                   onClick={() => router.push(`/chatBotPage/${chat.session_id}`)}
                 >
-                  <span>{chat.title}</span>
+                  <span>
+                    {chat?.title?.length > 20
+                      ? chat.title.slice(0, 20) + "..."
+                      : chat?.title || ""}
+                  </span>
                   <Trash2
                     size={18}
                     className="cursor-pointer hover:text-red-500"

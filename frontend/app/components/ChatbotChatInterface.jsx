@@ -43,7 +43,7 @@ const ChatbotChatInterface = () => {
           </div>
           <div className="w-full flex justify-center">
             <div className="flex items-center bg-black text-white rounded-full px-4 py-3 w-3/4 shadow-lg">
-              <div className="flex items-center space-x-2 mr-3 cursor-pointer p-2 rounded-full bg-gradient-to-r from-blue-400 to-orange-400 hover:opacity-90 transition">
+              <div className="flex items-center space-x-2 mr-3 cursor-pointer p-2 rounded-full bg-gradient-to-r from-blue-400 to-white hover:opacity-90 transition">
                 <Link size={18} className="text-white" />
               </div>
               <input
