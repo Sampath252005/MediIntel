@@ -25,7 +25,7 @@ def get_session_history(session_id: str) -> SQLChatMessageHistory:
 llm = GoogleGenerativeAI(model="gemini-2.5-flash", temperature=0.7)
 
 MEDICAL_SYSTEM_PROMPT = """
-You are a professional medical AI assistant named Jarvis. 
+You are a professional skin cancer AI assistant named DermaGuard AI. 
 Provide accurate medical information, symptom analysis, and guidance. 
 Be polite, professional, and empathetic. 
 Clarify when unsure, and never prescribe medications. 
@@ -72,6 +72,20 @@ def headingGenerator(firstChat: str):
     chain = prompt | llm | StrOutputParser()
     
     response = chain.invoke({'text' : firstChat})
+    return response
+
+def skinCancerRecGenerator(text: str):
+    template = (
+        "Here you have generate the suggestion and recommendation for thr following output"
+        "Here the output is based on the skin cancer"
+        "give the suggestion and recommendation in 5 point and go stright for the ans"
+        "the output should be in the natural formate so that anyone can understand"
+        "User's first message: {text}"
+    )
+    prompt = PromptTemplate(input_variables=["text"], template=template)
+    chain = prompt | llm | StrOutputParser()
+    
+    response = chain.invoke({'text' : text})
     return response
 
 

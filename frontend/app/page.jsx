@@ -1,194 +1,144 @@
-"use client";
+"use client"
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import React, { useState, useEffect } from 'react';
+import NavBar from './components/NavBar';
+import ProfileModal from './components/ProfileModal';
+import { 
+  X, 
+  ScanLine, 
+  History, 
+  MessageCircle, 
+  Layers 
+} from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
-export default function Home() {
-  // const [students, setStudents] = useState([]);
-  // const [name, setName] = useState("");
-  // const [loading, setLoading] = useState(true);
-  // const [error, setError] = useState(null);
+const HomePage = () => {
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [profile, setProfile] = useState({name: "",email: "",picture: ""});
   const router = useRouter();
 
-  // useEffect(() => {
-  //   getStudents();
-  // }, []);
+  const getProfile = async () => {
+    try {
+      let response = await fetch("http://localhost:8000/Profile",{
+        method: "GET",
+        credentials: "include",
+      });
 
-  // const getStudents = async () => {
-  // try {
-  //   let response = await fetch("http://localhost:8000/student", {
-  //     method: "GET",
-  //     credentials: "include",
-  //   });
+      console.log(response);
 
-  //   console.log(response);
+      if (response.status === 403 || response.status === 401) {
+        const refreshRes = await fetch("http://localhost:8000/refresh", {
+          method: "POST",
+          credentials: "include",
+        });
 
-  //   if (response.status === 403 || response.status === 401) {
-  //     const refreshRes = await fetch("http://localhost:8000/refresh", {
-  //       method: "POST",
-  //       credentials: "include",
-  //     });
+        if (!refreshRes.ok) {
+          console.warn("Refresh token invalid or expired");
+          router.push("/login");
+          return;
+        }
 
-  //     if (!refreshRes.ok) {
-  //       console.warn("Refresh token invalid or expired");
-  //       router.push("/login");
-  //       return;
-  //     }
+        response = await fetch("http://localhost:8000/Profile", {
+          method: "GET",
+          credentials: "include",
+        });
+      }
 
-  //     response = await fetch("http://localhost:8000/student", {
-  //       method: "GET",
-  //       credentials: "include",
-  //     });
-  //   }
+      if (!response.ok) {
+        return;
+      }
 
-  //   if (!response.ok) {
-  //     const errorData = await response.json().catch(() => null);
-  //     const message = errorData?.message || "Failed to fetch students";
-  //     setError(message);
-  //     return;
-  //   }
+      const data = await response.json();
+      setProfile(data);
+    } catch (err) {
+      console.log(err);
+    }
+  }
 
-  //   const data = await response.json();
-  //   setStudents(data);
-  // } catch (err) {
-  //   setError("Network or server error");
-  // } finally {
-  //   setLoading(false);
-  // }
-  // };
-
-  // const addStudent = async (e) => {
-  //   e.preventDefault();
-
-  //   if (!name) {
-  //     setError("Please provide name");
-  //     return;
-  //   }
-
-  //   try {
-  //     const response = await fetch("http://localhost:8000/student", {
-  //       method: "POST",
-  //       credentials: "include",
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //       },
-  //       body: JSON.stringify({
-  //         id: 4,
-  //         name,
-  //       }),
-  //     });
-
-  //     if (response.status === 403) {
-  //       const refreshRes = await fetch("http://localhost:8000/refresh", {
-  //         method: "POST",
-  //         credentials: "include",
-  //       });
-
-  //       if (!refreshRes.ok) {
-  //         router.push("/login");
-  //         return;
-  //       }
-
-  //       await addStudent(e); // retry
-  //       return;
-  //     }
-
-  //     if (!response.ok) {
-  //       const data = await response.json().catch(() => null);
-  //       const message = data?.message || "Failed to add student";
-  //       setError(message);
-  //       return;
-  //     }
-
-  //     setName("");
-  //     setError(null);
-  //     await getStudents(); // Refresh list
-  //   } catch (err) {
-  //     console.error("Add student error:", err);
-  //     setError("Failed to add student due to network/server error");
-  //   }
-  // };
-
-  // const logout = async () => {
-  //   try {
-  //     const res = await fetch("http://localhost:8000/logout", {
-  //       method: "POST",
-  //       credentials: "include",
-  //     });
-
-  //     if (res.ok) {
-  //       router.push("/login");
-  //     } else {
-  //       const data = await res.json().catch(() => null);
-  //       const message = data?.message || "Failed to logout";
-  //       setError(message);
-  //     }
-  //   } catch (err) {
-  //     setError("Logout failed due to network/server error");
-  //   }
-  // };
-
+  useEffect(() => {
+    getProfile()
+  }, [])
 
   return (
-    // <div className="p-4 text-gray-900 dark:text-white">
-    //   <div className="flex justify-between items-center mb-4">
-    //     <h1 className="text-2xl font-bold">Student List</h1>
-    //     <button
-    //       onClick={logout}
-    //       className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
-    //     >
-    //       Logout
-    //     </button>
-    //   </div>
+    <div className="min-h-screen bg-slate-50 font-sans text-slate-800 relative">
+      
+      {/* --- REUSABLE NAVBAR COMPONENT --- */}
+      <NavBar 
+        user={profile} 
+        onProfileClick={() => setIsProfileOpen(true)} 
+      />
 
-    //   <form onSubmit={addStudent} className="mb-6 space-y-4">
-    //     <div>
-    //       <label className="block mb-1">Name</label>
-    //       <input
-    //         type="text"
-    //         value={name}
-    //         onChange={(e) => setName(e.target.value)}
-    //         className="w-full px-3 py-2 border rounded dark:bg-gray-700"
-    //       />
-    //     </div>
+      {/* --- Hero Section --- */}
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-24">
+        <div className="text-center max-w-3xl mx-auto">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-100 text-teal-700 text-xs font-semibold uppercase tracking-wide mb-6">
+            <span>AI-Powered Dermatology</span>
+          </div>
+          <h1 className="text-4xl sm:text-6xl font-extrabold text-slate-900 tracking-tight mb-6">
+            Early Detection for <br />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-teal-500 to-blue-600">
+              Healthier Skin
+            </span>
+          </h1>
+          <p className="text-lg text-slate-600 mb-10 leading-relaxed">
+            Utilize advanced AI to classify skin lesions and track changes over time. 
+            Compare past scans with current images to monitor improvements and detect potential risks early.
+          </p>
 
-    //     <button
-    //       type="submit"
-    //       className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-    //     >
-    //       Add Student
-    //     </button>
-    //   </form>
+          <div className="flex flex-col sm:flex-row justify-center gap-4">
+            <Link href="/classification">
+            <button className="flex items-center justify-center gap-2 px-8 py-4 bg-teal-600 text-white rounded-xl font-bold shadow-lg shadow-teal-500/30 hover:bg-teal-700 hover:scale-105 transition transform">
+              <ScanLine size={20} />
+              Start Scan
+            </button>
+            </Link>
+            <Link href="/comparison">
+            <button className="flex items-center justify-center gap-2 px-8 py-4 bg-white text-slate-700 border border-slate-200 rounded-xl font-bold shadow-sm hover:bg-slate-50 hover:border-teal-300 transition">
+              <Layers size={20} />
+              Run Comparison
+            </button>
+            </Link>
+          </div>
+        </div>
 
-    //   {loading && <p>Loading students...</p>}
-    //   {error && <p className="text-red-500">{error}</p>}
+        {/* --- Feature Grid --- */}
+        <div className="grid md:grid-cols-3 gap-8 mt-20">
+          <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 hover:shadow-md transition">
+            <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-lg flex items-center justify-center mb-4">
+              <ScanLine size={24} />
+            </div>
+            <h3 className="text-xl font-bold text-slate-900 mb-2">AI Classification</h3>
+            <p className="text-slate-600">Upload an image of a skin lesion. Our deep learning model analyzes texture and color to provide an instant risk assessment.</p>
+          </div>
 
-    //   {!loading && students.length === 0 && (
-    //     <p className="text-gray-500">No students found.</p>
-    //   )}
+          <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 hover:shadow-md transition">
+            <div className="w-12 h-12 bg-purple-50 text-purple-600 rounded-lg flex items-center justify-center mb-4">
+              <History size={24} />
+            </div>
+            <h3 className="text-xl font-bold text-slate-900 mb-2">Smart Comparison</h3>
+            <p className="text-slate-600">See the difference. We overlay your old image with the new one to highlight healing progress or concerning changes.</p>
+          </div>
 
-    //   <ul className="space-y-4">
-    //     {students.map((student) => (
-    //       <li
-    //         key={student.id}
-    //         className="border rounded p-4 bg-white dark:bg-gray-800 shadow"
-    //       >
-    //         <p><strong>ID:</strong> {student.id}</p>
-    //         <p><strong>Name:</strong> {student.name}</p>
-    //       </li>
-    //     ))}
-    //   </ul>
-    // </div>
-    <div className="flex flex-col items-center justify-center h-screen text-center">
-      <h1 className="text-4xl font-bold mb-4">AI Medical Scan Analyzer</h1>
-      <p className="text-gray-600 mb-6">Upload → Analyze → Compare → Export</p>
+          <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 hover:shadow-md transition">
+            <div className="w-12 h-12 bg-green-50 text-green-600 rounded-lg flex items-center justify-center mb-4">
+              <MessageCircle size={24} />
+            </div>
+            <h3 className="text-xl font-bold text-slate-900 mb-2">Medical Chatbot</h3>
+            <p className="text-slate-600">Have questions about symptoms? Chat with our AI assistant trained on dermatological data for instant guidance.</p>
+          </div>
+        </div>
+      </main>
 
-      <div
-        onClick={()=>router.push("/dashBoard")}
-        className="px-6 py-2 bg-blue-600 text-white rounded-lg cursor-pointer"
-      >
-        Get Started
-      </div>
+      {/* --- Profile Modal Overlay --- */}
+      <ProfileModal 
+        isOpen={isProfileOpen} 
+        onClose={() => setIsProfileOpen(false)} 
+        user={profile} 
+      />
+
     </div>
   );
-}
+};
+
+export default HomePage;

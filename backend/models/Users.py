@@ -9,3 +9,4 @@ class Users(SQLModel , table = True):
     picture: Optional[str] = Field(default=None,nullable=True)
     
     chats: List["ChatStore"] = Relationship(back_populates="user" , cascade_delete=True) # type: ignore
+    skins: List["SkinHistory"] = Relationship(back_populates="user" , cascade_delete=True) # type: ignore

@@ -4,6 +4,8 @@ from database import getSession
 from typing import List
 from dto.chatStoreDto import ChatStoreDto
 from models.ChatStore import ChatStore
+from models.Users import Users
+from routers.authApi import get_current_user
 from routers.chatHistory import storeChatHistory
 from chatModel.bot import get_general_response,getHistry
 from urllib.parse import unquote
@@ -11,12 +13,13 @@ from urllib.parse import unquote
 router = APIRouter(prefix='/chats')
 
 @router.post("/{sessionId}")
-def messaging(sessionId: str, userInput: str,session : Session=Depends(getSession)):
+def messaging(sessionId: str, userInput: str,session : Session=Depends(getSession),email: str = Depends(get_current_user)):
     try:
         history = getHistry(sessionId)
+        user: Users = session.exec(select(Users).where(Users.email == email)).first()
         if not history :
             chat = ChatStoreDto(title=unquote(userInput),session_id=sessionId)
-            storeChatHistory(1,chat,session)
+            storeChatHistory(user.id,chat,session)
             
         response = get_general_response(session_id=sessionId, user_input=unquote(userInput))
         if not response:

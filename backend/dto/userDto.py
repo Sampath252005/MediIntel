@@ -8,3 +8,8 @@ class UserCreate(BaseModel):
 class UserLogin(BaseModel):
     email: str
     password: str
+    
+class GetUser(BaseModel):
+    name: str
+    email: str
+    picture: str | None = None

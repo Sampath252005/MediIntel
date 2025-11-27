@@ -1,16 +1,19 @@
 from fastapi import APIRouter, Depends, HTTPException
-from sqlmodel import Session, select
+from sqlmodel import Session, select, text
 from database import getSession
 from typing import List
 from dto.chatStoreDto import ChatStoreDto
 from models.ChatStore import ChatStore
 from chatModel.bot import headingGenerator
+from models.Users import Users
+from routers.authApi import get_current_user
 
 router = APIRouter(prefix='/chatHistory')
 
-@router.get('/{userId}')
-def getChatHistory(userId: int , session : Session = Depends(getSession)):
-    chats = session.exec(select(ChatStore).where(ChatStore.user_id == userId)).all()
+@router.get('/his')
+def getChatHistory(session : Session = Depends(getSession),email: str = Depends(get_current_user)):
+    user: Users = session.exec(select(Users).where(Users.email == email)).first()
+    chats = session.exec(select(ChatStore).where(ChatStore.user_id == user.id)).all()
     if not chats:
         raise HTTPException(status_code=404, detail="No chat history found for this user.")
     return {
@@ -26,6 +29,7 @@ def deleteChat(sessionId: str, session: Session = Depends(getSession)):
         raise HTTPException(status_code=404, detail="Chat not found.")
     
     session.delete(chat)
+    session.exec(text("delete from message_store where session_id =:sId"),params={'sId' : sessionId})
     session.commit()
     
     return {"message": "Chat deleted successfully."}

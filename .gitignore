@@ -13,6 +13,8 @@
 !frontend/.yarn/plugins
 !frontend/.yarn/releases
 !frontend/.yarn/versions
+/backend/mlModel/cnn_fc_model.h5
+/backend/.*
 
 # testing
 /frontend/coverage
